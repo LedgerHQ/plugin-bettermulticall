@@ -1,14 +1,16 @@
 [package]
-name = "plugin-erc20"
+name = "plugin-multicall"
 version = "0.1.0"
 edition = "2021"
-authors = ["yogh333"]
+authors = ["yogh333", "th0rgal"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-nanos_sdk = { path = "../ledger-nanos-sdk" }
-nanos_ui = { path = "../ledger-nanos-ui" }
+nanos_sdk = { git = "https://github.com/yogh333/ledger-nanos-sdk.git", branch = "feat/libcall_support" }
+nanos_ui = { git = "https://github.com/yogh333/ledger-nanos-ui.git", branch = "feat/use_fork_nanos_sdk" }
+#nanos_sdk = { path = "../ledger-nanos-sdk" }
+#nanos_ui = { path = "../ledger-nanos-ui" }
 
 [features]
 
@@ -17,7 +19,7 @@ panic = "abort"
 
 [profile.release]
 panic = "abort"
-opt-level = 'z' 
+opt-level = 'z'
 lto = true
 
 [package.metadata.nanos]
