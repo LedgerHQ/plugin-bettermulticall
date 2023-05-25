@@ -7,4 +7,4 @@ profile-rustflags = true
 rustflags = ["-Zshare-generics=off"]
 
 [build]
-target = "nanosplus" 
+target = "nanosplus"

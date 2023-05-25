@@ -1,27 +1,21 @@
 #[derive(Debug, Copy, Clone)]
 pub struct FieldElement {
-    pub value: [u8; 32]
+    pub value: [u8; 32],
 }
 
 impl FieldElement {
-
     pub const INVOKE: FieldElement = FieldElement {
         value: [
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x69, 0x6e, 0x76, 0x6f, 0x6b, 0x65
-        ]
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x69, 0x6e,
+            0x76, 0x6f, 0x6b, 0x65,
+        ],
     };
 
-    pub const ZERO: FieldElement = FieldElement {
-        value: [0u8; 32]
-    };
+    pub const ZERO: FieldElement = FieldElement { value: [0u8; 32] };
 
     pub fn new() -> Self {
-        Self {
-            value: [0u8; 32]
-        }
+        Self { value: [0u8; 32] }
     }
 
     pub fn clear(&mut self) {
@@ -32,10 +26,8 @@ impl FieldElement {
 impl From<&[u8]> for FieldElement {
     fn from(data: &[u8]) -> Self {
         let mut value: [u8; 32] = [0; 32];
-        value.copy_from_slice(data); 
-        Self {
-            value: value
-        }
+        value.copy_from_slice(data);
+        Self { value: value }
     }
 }
 
@@ -50,6 +42,20 @@ impl From<u8> for FieldElement {
 impl From<FieldElement> for u8 {
     fn from(fe: FieldElement) -> u8 {
         fe.value[31]
+    }
+}
+
+impl From<FieldElement> for usize {
+    fn from(fe: FieldElement) -> usize {
+        let mut value: usize = 0;
+        let size_of_usize = core::mem::size_of::<usize>();
+        let offset = if size_of_usize >= fe.value.len() { 0 } else { fe.value.len() - size_of_usize };
+
+        for i in 0..size_of_usize {
+            value |= (fe.value[i + offset] as usize) << ((size_of_usize - 1 - i) * 8);
+        }
+
+        value
     }
 }
 
@@ -68,7 +74,7 @@ pub struct CallArrayV1 {
     pub to: FieldElement,
     pub selector: FieldElement,
     pub call_data_len: FieldElement,
-    pub call_data: [FieldElement; 6]
+    pub call_data: [FieldElement; 6],
 }
 
 impl CallArray {
@@ -79,7 +85,7 @@ impl CallArray {
             entry_point: [0u8; 32],
             selector: FieldElement::new(),
             data_offset: FieldElement::new(),
-            data_len: FieldElement::new() 
+            data_len: FieldElement::new(),
         }
     }
 
@@ -99,7 +105,7 @@ impl CallArrayV1 {
             to: FieldElement::new(),
             selector: FieldElement::new(),
             call_data_len: FieldElement::new(),
-            call_data: [FieldElement::ZERO; 6]
+            call_data: [FieldElement::ZERO; 6],
         }
     }
 
@@ -115,18 +121,18 @@ impl CallArrayV1 {
 
 /// Maximum numbers of calls in a multicall Tx (out of memory)
 /// NanoS = 3
-/// NanoS+ = 10 (maybe more ?) 
+/// NanoS+ = 10 (maybe more ?)
 const MAX_TX_CALLS: usize = 3;
 
 pub struct CallData {
     pub call_array_len: FieldElement,
     pub calls: [CallArray; MAX_TX_CALLS],
     pub calldata_len: FieldElement,
-} 
+}
 
 pub struct CallDataV1 {
     pub call_array_len: FieldElement,
-    pub calls: [CallArrayV1; MAX_TX_CALLS]
+    pub calls: [CallArrayV1; MAX_TX_CALLS],
 }
 
 impl CallData {
@@ -134,7 +140,7 @@ impl CallData {
         Self {
             call_array_len: FieldElement::new(),
             calls: [CallArray::new(); MAX_TX_CALLS],
-            calldata_len: FieldElement::new()
+            calldata_len: FieldElement::new(),
         }
     }
 
@@ -165,12 +171,12 @@ impl CallDataV1 {
 
 pub struct Transaction {
     pub sender_address: FieldElement,
-    pub calldata: CallData,             
+    pub calldata: CallData,
     pub calldata_v1: CallDataV1,
     pub max_fee: FieldElement,
     pub nonce: FieldElement,
     pub version: FieldElement,
-    pub chain_id: FieldElement
+    pub chain_id: FieldElement,
 }
 
 impl Transaction {
@@ -182,7 +188,7 @@ impl Transaction {
             max_fee: FieldElement::new(),
             nonce: FieldElement::new(),
             version: FieldElement::new(),
-            chain_id: FieldElement::new()
+            chain_id: FieldElement::new(),
         }
     }
 
@@ -201,11 +207,11 @@ const MAX_TRANSACTION_LEN: usize = 510;
 
 pub enum RequestType {
     Unknown,
-    GetPubkey,     
+    GetPubkey,
     SignHash,
     SignTransaction,
-	ComputePedersen,
-    TestPlugin
+    ComputePedersen,
+    TestPlugin,
 }
 
 pub struct HashInfo {
@@ -213,12 +219,12 @@ pub struct HashInfo {
     pub m_hash: FieldElement,
     /// calldata_hash
     pub calldata_hash: FieldElement,
-    /// signature r 
+    /// signature r
     pub r: [u8; 32],
-    /// signature s 
+    /// signature s
     pub s: [u8; 32],
     /// parity of y-coordinate of R in ECDSA signature
-    pub v: u8
+    pub v: u8,
 }
 
 impl HashInfo {
@@ -228,7 +234,7 @@ impl HashInfo {
             calldata_hash: FieldElement::new(),
             r: [0u8; 32],
             s: [0u8; 32],
-            v: 0
+            v: 0,
         }
     }
 
@@ -249,7 +255,7 @@ pub struct Ctx {
     pub bip32_path: [u32; 6],
     pub bip32_path_len: u8,
     pub plugin_internal_ctx: [u8; 255],
-    pub plugin_internal_ctx_len: usize
+    pub plugin_internal_ctx_len: usize,
 }
 
 impl Ctx {
@@ -261,7 +267,7 @@ impl Ctx {
             bip32_path: [0u32; 6],
             bip32_path_len: 0,
             plugin_internal_ctx: [0u8; 255],
-            plugin_internal_ctx_len: 0
+            plugin_internal_ctx_len: 0,
         }
     }
 
