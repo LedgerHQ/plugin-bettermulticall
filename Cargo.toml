@@ -1,5 +1,5 @@
 [package]
-name = "rapp-multicall"
+name = "plugin-bmc"
 version = "0.1.0"
 edition = "2021"
 authors = ["yogh333", "th0rgal"]
@@ -8,8 +8,10 @@ authors = ["yogh333", "th0rgal"]
 
 [dependencies]
 heapless = "0.7.16"
-nanos_sdk = { git = "https://github.com/yogh333/ledger-nanos-sdk.git", branch = "feat/libcall_support" }
-nanos_ui = { git = "https://github.com/yogh333/ledger-nanos-ui.git", branch = "feat/use_fork_nanos_sdk" }
+#nanos_sdk = { git = "https://github.com/yogh333/ledger-nanos-sdk.git", branch = "feat/libcall_support" }
+#nanos_ui = { git = "https://github.com/yogh333/ledger-nanos-ui.git", branch = "feat/use_fork_nanos_sdk" }
+nanos_sdk = { path = "../ledger-nanos-sdk" }
+nanos_ui = { path = "../ledger-nanos-ui" }
 #starknet-ff = { version = "0.3.2", default-features = false }
 
 #nanos_sdk = { path = "../ledger-nanos-sdk" }
