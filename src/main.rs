@@ -14,13 +14,12 @@ use nanos_sdk::plugin::{
 use nanos_sdk::starknet::{
     Call, 
     AbstractCall,
-    AbstractCallData
+    AbstractCallData, FieldElement
 };
 
 use nanos_sdk::testing;
 
 //mod context;
-use testing::debug_print;
 //#[macro_use]
 //mod debug;
 //mod parser;
@@ -49,9 +48,37 @@ extern "C" fn sample_main(arg0: u32) {
             abstract_call.to.value = call.to.value;
             abstract_call.method = String::from("transfer");
             abstract_call.selector.value = call.selector.value;
-            for c in &call.calldata {
-                abstract_call.calldata.push(AbstractCallData::Felt(*c)).unwrap();
+            let mut i = 0;
+            while i < call.calldata.len() {
+                match call.calldata[i] {
+                    FieldElement::ZERO => {
+                        if i + 1 < call.calldata.len() {
+                            abstract_call.calldata.push(AbstractCallData::Felt(call.calldata[i + 1])).unwrap();
+                            i += 2;  // we just processed two elements
+                        } else {
+                            panic!("Invalid data: A 0-prefix felt should be followed by a value.");
+                        }
+                    },
+                    FieldElement::ONE => {
+                        if i + 1 < call.calldata.len() {
+                            abstract_call.calldata.push(AbstractCallData::Ref(call.calldata[i + 1].into())).unwrap();
+                            i += 2; 
+                        } else {
+                            panic!("Invalid data: A 1-prefix felt should be followed by a value.");
+                        }
+                    },
+                    FieldElement::TWO => {
+                        if i + 2 < call.calldata.len() {
+                            abstract_call.calldata.push(AbstractCallData::CallRef(call.calldata[i + 1].into(), call.calldata[i + 2].into())).unwrap();
+                            i += 3;  // we just processed three elements
+                        } else {
+                            panic!("Invalid data: A 2-prefix felt should be followed by two values.");
+                        }
+                    },
+                    _ => panic!("Unknown prefix for better-multicall."),
+                }
             }
+
             call_to_nref[0] = 0xDE;call_to_nref[1] = 0xAD;
             call_to_nref[2] = 0xBE;call_to_nref[3] = 0xEF;
 
