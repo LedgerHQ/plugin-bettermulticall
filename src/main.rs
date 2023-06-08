@@ -39,28 +39,32 @@ extern "C" fn sample_main(arg0: u32) {
             abstract_call.method.clone_from(&call.method);
             abstract_call.selector.value = call.selector.value;
             let mut i = 0;
-            while i < call.calldata.len() {
+            let mut j: usize = 0;
+            while i < call.calldata_len {
                 match call.calldata[i] {
                     FieldElement::ZERO => {
                         if i + 1 < call.calldata.len() {
-                            abstract_call.calldata.push(AbstractCallData::Felt(call.calldata[i + 1])).unwrap();
+                            abstract_call.calldata[j] = AbstractCallData::Felt(call.calldata[i + 1]);
                             i += 2;  // we just processed two elements
+                            j += 1;
                         } else {
                             panic!("Invalid data: A 0-prefix felt should be followed by a value.");
                         }
                     },
                     FieldElement::ONE => {
                         if i + 1 < call.calldata.len() {
-                            abstract_call.calldata.push(AbstractCallData::Ref(call.calldata[i + 1].into())).unwrap();
-                            i += 2; 
+                            abstract_call.calldata[j] = AbstractCallData::Ref(call.calldata[i + 1].into());
+                            i += 2;
+                            j += 1; 
                         } else {
                             panic!("Invalid data: A 1-prefix felt should be followed by a value.");
                         }
                     },
                     FieldElement::TWO => {
                         if i + 2 < call.calldata.len() {
-                            abstract_call.calldata.push(AbstractCallData::CallRef(call.calldata[i + 1].into(), call.calldata[i + 2].into())).unwrap();
+                            abstract_call.calldata[j] = AbstractCallData::CallRef(call.calldata[i + 1].into(), call.calldata[i + 2].into());
                             i += 3;  // we just processed three elements
+                            j += 1;
                         } else {
                             panic!("Invalid data: A 2-prefix felt should be followed by two values.");
                         }
@@ -71,8 +75,8 @@ extern "C" fn sample_main(arg0: u32) {
                     },
                 }
             }
+            abstract_call.calldata_len = j;
             testing::debug_print("Check plugin Better MultiCall OUT \n");
-
         }
         _ => {
             testing::debug_print("Not implemented\n");
