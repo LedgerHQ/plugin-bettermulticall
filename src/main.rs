@@ -27,7 +27,7 @@ extern "C" fn sample_main(arg0: u32) {
 
     match operation {
         PluginInteractionType::Feed => {
-            testing::debug_print("Check plugin Better MultiCall IN\n");
+            testing::debug_print("Feed plugin Better MultiCall IN\n");
 
             let value2 = unsafe { *args.add(1) as *mut PluginFeedParams };
             let params: &mut PluginFeedParams = unsafe { &mut *value2 };
@@ -76,7 +76,7 @@ extern "C" fn sample_main(arg0: u32) {
                 }
             }
             abstract_call.calldata_len = j;
-            testing::debug_print("Check plugin Better MultiCall OUT \n");
+            testing::debug_print("Feed plugin Better MultiCall OUT \n");
         }
         _ => {
             testing::debug_print("Not implemented\n");
