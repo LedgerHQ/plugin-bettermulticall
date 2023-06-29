@@ -11,10 +11,11 @@ use nanos_sdk::plugin::{
     PluginFeedParams
 };
 
-use nanos_sdk::starknet::{
+use starknet_sdk::types::{
     Call, 
     AbstractCall,
-    AbstractCallData, FieldElement
+    AbstractCallData, 
+    FieldElement
 };
 
 use nanos_sdk::testing;

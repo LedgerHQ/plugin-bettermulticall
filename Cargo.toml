@@ -11,10 +11,7 @@ authors = ["yogh333", "th0rgal"]
 #nanos_ui = { git = "https://github.com/yogh333/ledger-nanos-ui.git", branch = "feat/use_fork_nanos_sdk" }
 nanos_sdk = { path = "../ledger-nanos-sdk" }
 nanos_ui = { path = "../ledger-nanos-ui" }
-#starknet-ff = { version = "0.3.2", default-features = false }
-
-#nanos_sdk = { path = "../ledger-nanos-sdk" }
-#nanos_ui = { path = "../ledger-nanos-ui" }
+starknet_sdk = {path = "../starknet-sdk"}
 
 [features]
 
