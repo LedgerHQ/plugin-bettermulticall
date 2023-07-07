@@ -1,14 +1,13 @@
 #![no_std]
 #![no_main]
 
-//use context::Transaction;
 use nanos_sdk::bindings::os_lib_end;
 
 nanos_sdk::set_panic!(nanos_sdk::exiting_panic);
 
 use nanos_sdk::plugin::{
     PluginInteractionType, 
-    PluginFeedParams
+    PluginParam
 };
 
 use starknet_sdk::types::{
@@ -19,6 +18,7 @@ use starknet_sdk::types::{
 };
 
 use nanos_sdk::testing;
+use nanos_sdk::string::String;
 
 #[no_mangle]
 extern "C" fn sample_main(arg0: u32) {
@@ -30,8 +30,8 @@ extern "C" fn sample_main(arg0: u32) {
         PluginInteractionType::Feed => {
             testing::debug_print("Feed plugin Better MultiCall IN\n");
 
-            let value2 = unsafe { *args.add(1) as *mut PluginFeedParams };
-            let params: &mut PluginFeedParams = unsafe { &mut *value2 };
+            let value2 = unsafe { *args.add(1) as *mut PluginParam };
+            let params: &mut PluginParam = unsafe { &mut *value2 };
 
             let call: &Call = unsafe {&*(params.data_in as *const Call)};
             let abstract_call: &mut AbstractCall = unsafe {&mut *(params.data_out as *mut AbstractCall)};
@@ -41,6 +41,7 @@ extern "C" fn sample_main(arg0: u32) {
             abstract_call.selector.value = call.selector.value;
             let mut i = 0;
             let mut j: usize = 0;
+
             while i < call.calldata_len {
                 match call.calldata[i] {
                     FieldElement::ZERO => {
