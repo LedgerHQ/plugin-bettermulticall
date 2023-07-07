@@ -54,21 +54,12 @@ extern "C" fn sample_main(arg0: u32) {
                         }
                     },
                     FieldElement::ONE => {
-                        if i + 1 < call.calldata.len() {
-                            abstract_call.calldata[j] = AbstractCallData::Ref(call.calldata[i + 1].into());
-                            i += 2;
-                            j += 1; 
-                        } else {
-                            panic!("Invalid data: A 1-prefix felt should be followed by a value.");
-                        }
-                    },
-                    FieldElement::TWO => {
                         if i + 2 < call.calldata.len() {
                             abstract_call.calldata[j] = AbstractCallData::CallRef(call.calldata[i + 1].into(), call.calldata[i + 2].into());
                             i += 3;  // we just processed three elements
                             j += 1;
                         } else {
-                            panic!("Invalid data: A 2-prefix felt should be followed by two values.");
+                            panic!("Invalid data: A 1-prefix felt should be followed by two values.");
                         }
                     },
                     _ => {
